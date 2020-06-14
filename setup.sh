@@ -3,12 +3,14 @@
 
 # install docker if it isn't already
 if ! sudo docker --version > /dev/null; then
+    echo 'downloading docker'
     curl https://get.docker.com | tac | tac | sudo bash
 fi
 
 MYSQL_DATABASE="bookshelve"
 
 create_container() {
+    echo 'creating container'
     sudo docker run -d \
         --name mysql \
         -p 3306:3306 \
@@ -26,11 +28,13 @@ create_container() {
 }
 
 grant_user_read_access() {
+    echo 'granting user read access'
     command="grant select on ${MYSQL_DATABASE}.* to '${MYSQL_USER}'@'%' identified by '${MYSQL_PASSWORD}'";
     sudo docker exec -i mysql mysql --connect-timeout=90 -uroot -p${MYSQL_ROOT_PASSWORD} -e  "${command}"
 }
 
 run_sql_scripts() {
+    echo 'running sql scripts'
     sudo docker exec -i mysql mysql bookshelve \
         -uroot -p${MYSQL_ROOT_PASSWORD} < setup.sql 
 }
